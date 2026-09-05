@@ -31,6 +31,10 @@
   volatile long left_enc_pos = 0L;
   volatile long right_enc_pos = 0L;
   static const int8_t ENC_STATES [] = {0,1,-1,0,-1,0,0,1,1,0,0,-1,0,-1,1,0};  //encoder lookup table
+
+  // Encoder calibration factors
+  const float LEFT_SCALE = 1.0;
+  const float RIGHT_SCALE = 1.22918;
     
   /* Interrupt routine for LEFT encoder, taking care of actual counting */
   ISR (PCINT2_vect){
@@ -53,9 +57,16 @@
   }
   
   /* Wrap the encoder reading function */
+  // long readEncoder(int i) {
+  //   if (i == LEFT) return left_enc_pos;
+  //   else return right_enc_pos;
+  // }
+  /* Wrap the encoder reading function */
   long readEncoder(int i) {
-    if (i == LEFT) return left_enc_pos;
-    else return right_enc_pos;
+    if (i == LEFT)
+      return (long)(left_enc_pos * LEFT_SCALE);
+    else
+      return (long)(right_enc_pos * RIGHT_SCALE);
   }
 
   /* Wrap the encoder reset function */
